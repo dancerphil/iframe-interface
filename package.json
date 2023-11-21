@@ -1,0 +1,29 @@
+{
+  "name": "iframe-interface",
+  "version": "0.0.1",
+  "description": "create interface from iframe",
+  "license": "MIT",
+  "main": "es/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
+  "files": [
+    "es"
+  ],
+  "scripts": {
+    "build": "rm -rf es/ && tsc",
+    "lint": "skr lint",
+    "test": "skr test -- --coverage",
+    "prepublishOnly": "yarn build"
+  },
+  "author": "zhangcong06",
+  "devDependencies": {
+    "@reskript/cli": "^6.0.3",
+    "@reskript/cli-lint": "^6.0.3",
+    "@reskript/cli-test": "^6.0.3",
+    "@reskript/config-jest": "^6.0.3",
+    "@reskript/config-lint": "^6.0.3",
+    "eslint": "^8.53.0",
+    "stylelint": "^15.11.0",
+    "typescript": "^5.2.2"
+  }
+}
