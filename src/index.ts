@@ -2,6 +2,7 @@ const randomId = () => Math.random().toString(36).slice(2);
 
 interface Options {
     side: 'host' | 'guest';
+    targetOrigin?: string;
 }
 
 interface MessageData {
@@ -11,49 +12,6 @@ interface MessageData {
     id: string;
     payload: any;
 }
-
-interface RequestHandlerParams {
-    oppositeWindowRef: {
-        current: Window | null;
-    };
-    data: MessageData;
-    registryMap: Map<string, (params: any) => any>;
-}
-
-const requestHandler = async ({oppositeWindowRef, data, registryMap}: RequestHandlerParams) => {
-    const {name, id, payload} = data;
-
-    const resolve = (result: any) => {
-        oppositeWindowRef.current?.postMessage({
-            meta: 'iframe-interface',
-            type: 'resolve',
-            name,
-            id,
-            payload: result,
-        });
-    };
-    const reject = (error: Error) => {
-        oppositeWindowRef.current?.postMessage({
-            meta: 'iframe-interface',
-            type: 'reject',
-            name,
-            id,
-            payload: error,
-        });
-    };
-    const handler = registryMap.get(name);
-    if (!handler) {
-        reject(new Error(`No handler found for ${name}`));
-        return;
-    }
-    try {
-        const result = await handler(payload);
-        resolve(result);
-    }
-    catch (e) {
-        reject(e as Error);
-    }
-};
 
 export const createFactory = (options: Options) => {
     const oppositeWindowRef = {
@@ -77,6 +35,48 @@ export const createFactory = (options: Options) => {
         registryMap.set(name, handler);
     };
 
+    const oppositeWindowPostMessage = (message: MessageData) => {
+        oppositeWindowRef.current?.postMessage(
+            message,
+            {targetOrigin: options.targetOrigin}
+        );
+    };
+
+    const requestHandler = async (data: MessageData) => {
+        const {name, id, payload} = data;
+
+        const resolve = (result: any) => {
+            oppositeWindowPostMessage({
+                meta: 'iframe-interface',
+                type: 'resolve',
+                name,
+                id,
+                payload: result,
+            });
+        };
+        const reject = (error: Error) => {
+            oppositeWindowPostMessage({
+                meta: 'iframe-interface',
+                type: 'reject',
+                name,
+                id,
+                payload: error,
+            });
+        };
+        const handler = registryMap.get(name);
+        if (!handler) {
+            reject(new Error(`No handler found for ${name}`));
+            return;
+        }
+        try {
+            const result = await handler(payload);
+            resolve(result);
+        }
+        catch (e) {
+            reject(e as Error);
+        }
+    };
+
     const createCall = <TParams = void, T = unknown>(name: string) => {
         const call = (params: TParams): Promise<T> => {
             return new Promise((resolve, reject) => {
@@ -85,7 +85,7 @@ export const createFactory = (options: Options) => {
                     resolve,
                     reject,
                 });
-                oppositeWindowRef.current?.postMessage({
+                oppositeWindowPostMessage({
                     meta: 'iframe-interface',
                     type: 'request',
                     name,
@@ -108,11 +108,7 @@ export const createFactory = (options: Options) => {
         const {type} = data;
 
         if (type === 'request') {
-            requestHandler({
-                oppositeWindowRef,
-                data,
-                registryMap,
-            });
+            requestHandler(data);
             return;
         }
         if (type === 'resolve') {
