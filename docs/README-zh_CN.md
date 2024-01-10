@@ -64,6 +64,8 @@ const Component = () => {
 }
 ```
 
+> 在 host 侧 `registerCallHandler` 并在 guest 侧 `createCall` 也是可以的。只要把它们放在两侧即可。
+
 ### 额外的话题
 
 当前没有实现生命周期，比如 onResolve，看上去没有必要。如果你在使用过程中有什么通用的需求，并且适合在 `iframe-interface` 中实现，欢迎提出 issue 讨论。

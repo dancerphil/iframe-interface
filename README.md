@@ -18,8 +18,6 @@ yarn add iframe-interface
 
 `iframe-interface` separate api into 3 stage: factory => interface => call. Which is inherited from [`axios-interface`](https://github.com/dancerphil/axios-interface) (Another helpful api tool widely used by our team).
 
-- host side
-
 ```typescript jsx
 import {createFactory} from 'iframe-interface';
 
@@ -63,6 +61,8 @@ const Component = () => {
     return null;
 }
 ```
+
+> `registerCallHandler` at host side and `createCall` at guest side is also allowed. Put them at the opposite sides and it will work.
 
 ### Further
 

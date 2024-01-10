@@ -80,7 +80,7 @@ export const createFactory = (options: Options) => {
     const createCall = <TParams = void, T = unknown>(name: string) => {
         const call = (params: TParams): Promise<T> => {
             return new Promise((resolve, reject) => {
-                const id = `${name}-${randomId}-${Date.now()}`;
+                const id = `${name}-${randomId()}-${Date.now()}`;
                 promiseResolverMap.set(id, {
                     resolve,
                     reject,
@@ -111,23 +111,13 @@ export const createFactory = (options: Options) => {
             requestHandler(data);
             return;
         }
-        if (type === 'resolve') {
+        if (type === 'resolve' || type === 'reject') {
             const {id, payload} = data;
             const resolver = promiseResolverMap.get(id);
             if (!resolver) {
                 return;
             }
-            resolver.resolve(payload);
-            promiseResolverMap.delete(id);
-            return;
-        }
-        if (type === 'reject') {
-            const {id, payload} = data;
-            const resolver = promiseResolverMap.get(id);
-            if (!resolver) {
-                return;
-            }
-            resolver.reject(payload);
+            resolver[type](payload);
             promiseResolverMap.delete(id);
         }
     });
