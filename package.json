@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "description": "create interface from iframe",
   "license": "MIT",
+  "type": "module",
   "main": "es/index.js",
   "module": "es/index.js",
   "types": "es/index.d.ts",
@@ -11,19 +12,17 @@
   ],
   "scripts": {
     "build": "rm -rf es/ && tsc",
-    "lint": "skr lint",
-    "test": "skr test -- --coverage",
+    "lint": "eslint src",
     "prepublishOnly": "yarn build"
   },
   "author": "zhangcong06",
   "devDependencies": {
-    "@reskript/cli": "^6.0.3",
-    "@reskript/cli-lint": "^6.0.3",
-    "@reskript/cli-test": "^6.0.3",
-    "@reskript/config-jest": "^6.0.3",
-    "@reskript/config-lint": "^6.0.3",
-    "eslint": "^8.53.0",
-    "stylelint": "^15.11.0",
-    "typescript": "^5.2.2"
+    "@eslint/js": "^9.27.0",
+    "@stylistic/eslint-plugin": "^4.4.0",
+    "eslint": "^9.27.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
   }
 }

@@ -38,7 +38,7 @@ export const createFactory = (options: Options) => {
     const oppositeWindowPostMessage = (message: MessageData) => {
         oppositeWindowRef.current?.postMessage(
             message,
-            {targetOrigin: options.targetOrigin}
+            {targetOrigin: options.targetOrigin},
         );
     };
 
